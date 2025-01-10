@@ -8,9 +8,8 @@ User = get_user_model()
 class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
-        fields = ('student_id', 'grade_level', 'parent_name', 'parent_phone',
-                  'parent_email', 'date_of_birth', 'address', 'avatar',
-                  'enrollment_date')
+        fields = ('student_id', 'grade_level', 'date_of_birth',
+                  'address', 'avatar', 'enrollment_date')
         read_only_fields = ('enrollment_date',)
 
 
@@ -75,20 +74,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_type = validated_data.get('user_type')
 
-        # Remove all profile data from validated_data
         student_profile_data = validated_data.pop('student_profile', None)
         teacher_profile_data = validated_data.pop('teacher_profile', None)
         admin_profile_data = validated_data.pop('admin_profile', None)
 
-        # Get the password and remove it from validated_data
         password = validated_data.pop('password')
 
-        # Create the user
         user = User(**validated_data)
         user.set_password(password)
         user.save()
 
-        # Create the appropriate profile based on user_type
         if user_type == 'student' and student_profile_data:
             StudentProfile.objects.create(user=user, **student_profile_data)
         elif user_type == 'teacher' and teacher_profile_data:

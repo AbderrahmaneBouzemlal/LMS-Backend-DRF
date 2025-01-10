@@ -15,6 +15,19 @@ class User(AbstractUser):
     user_type = models.CharField(max_length=20, choices=USER_TYPES)
     phone = models.CharField(max_length=15, blank=True)
 
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='User_set',
+        blank=True
+    )
+
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='User_permissions_set',
+        blank=True
+    )
+
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['user_type']
 
